@@ -1,9 +1,9 @@
 
 import React, { useState } from 'react';
 import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { View, Text, YStack, XStack, Card, Image, Button } from 'tamagui';
+import { View, Text, YStack, XStack, Card, Image } from 'tamagui';
 import { Link } from 'expo-router';
-import { Camera, Heart, MessageCircle, Plus } from 'lucide-react-native';
+import { Camera, Heart, MessageCircle } from 'lucide-react-native';
 
 // Mock data for challenges
 const CHALLENGES = [
@@ -96,7 +96,7 @@ export default function Home() {
         paddingHorizontal="$4"
       >
         <Text
-          fontFamily="Poppins-Bold"
+          fontWeight="bold"
           fontSize={24}
           color="white"
           textAlign="center"
@@ -112,7 +112,7 @@ export default function Home() {
       >
         {/* Today's Challenges */}
         <YStack padding="$4" space="$3">
-          <Text fontFamily="Poppins-SemiBold" fontSize={18} color="#333">
+          <Text fontWeight="600" fontSize={18} color="#333">
             Today's Challenges
           </Text>
           
@@ -140,17 +140,17 @@ export default function Home() {
                         resizeMode="cover"
                       />
                       <YStack padding="$3" space="$1">
-                        <Text fontFamily="Poppins-SemiBold" fontSize={16} color="#333">
+                        <Text fontWeight="600" fontSize={16} color="#333">
                           {challenge.title}
                         </Text>
-                        <Text fontFamily="Poppins-Regular" fontSize={12} color="#666" numberOfLines={1}>
+                        <Text fontSize={12} color="#666" numberOfLines={1}>
                           {challenge.description}
                         </Text>
                         <XStack justifyContent="space-between" marginTop="$1">
-                          <Text fontFamily="Poppins-Medium" fontSize={12} color="#6c5ce7">
+                          <Text fontWeight="500" fontSize={12} color="#6c5ce7">
                             {challenge.timeRemaining} left
                           </Text>
-                          <Text fontFamily="Poppins-Medium" fontSize={12} color="#666">
+                          <Text fontWeight="500" fontSize={12} color="#666">
                             {challenge.participants} participants
                           </Text>
                         </XStack>
@@ -165,7 +165,7 @@ export default function Home() {
 
         {/* Feed */}
         <YStack padding="$4" space="$4">
-          <Text fontFamily="Poppins-SemiBold" fontSize={18} color="#333">
+          <Text fontWeight="600" fontSize={18} color="#333">
             Trending Photos
           </Text>
           
@@ -187,14 +187,14 @@ export default function Home() {
                   borderRadius={20}
                 />
                 <YStack>
-                  <Text fontFamily="Poppins-SemiBold" fontSize={14} color="#333">
+                  <Text fontWeight="600" fontSize={14} color="#333">
                     {item.user.name}
                   </Text>
-                  <Text fontFamily="Poppins-Regular" fontSize={12} color="#6c5ce7">
+                  <Text fontSize={12} color="#6c5ce7">
                     #{item.challenge}
                   </Text>
                 </YStack>
-                <Text fontFamily="Poppins-Regular" fontSize={12} color="#999" marginLeft="auto">
+                <Text fontSize={12} color="#999" marginLeft="auto">
                   {item.timeAgo}
                 </Text>
               </XStack>
@@ -209,7 +209,7 @@ export default function Home() {
               
               {/* Caption */}
               <YStack padding="$3" space="$2">
-                <Text fontFamily="Poppins-Regular" fontSize={14} color="#333">
+                <Text fontSize={14} color="#333">
                   {item.caption}
                 </Text>
                 
@@ -219,7 +219,7 @@ export default function Home() {
                     <TouchableOpacity>
                       <Heart size={20} color="#666" />
                     </TouchableOpacity>
-                    <Text fontFamily="Poppins-Medium" fontSize={14} color="#666">
+                    <Text fontWeight="500" fontSize={14} color="#666">
                       {item.likes}
                     </Text>
                   </XStack>
@@ -227,7 +227,7 @@ export default function Home() {
                     <TouchableOpacity>
                       <MessageCircle size={20} color="#666" />
                     </TouchableOpacity>
-                    <Text fontFamily="Poppins-Medium" fontSize={14} color="#666">
+                    <Text fontWeight="500" fontSize={14} color="#666">
                       {item.comments}
                     </Text>
                   </XStack>
