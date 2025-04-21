@@ -30,7 +30,12 @@
     "react-native-screens": "^4.10.0",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "^0.19.13",
-    "tamagui": "^1.126.1"
+    "tamagui": "^1.126.1",
+    "expo-image": "latest",
+    "expo-image-picker": "latest",
+    "expo-camera": "latest",
+    "lucide-react-native": "latest",
+    "date-fns": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
