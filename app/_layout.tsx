@@ -1,19 +1,13 @@
 
-import { Stack, Slot } from 'expo-router';
-import { TamaguiProvider } from 'tamagui';
-import config from '../tamagui.config';
-import { View } from 'tamagui';
+import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import TabBar from '../components/TabBar';
+import { View } from 'react-native';
 
 export default function RootLayout() {
   return (
-    <TamaguiProvider config={config}>
+    <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       <StatusBar style="dark" />
-      <View flex={1}>
-        <Slot />
-        <TabBar />
-      </View>
-    </TamaguiProvider>
+      <Stack screenOptions={{ headerShown: false }} />
+    </View>
   );
 }

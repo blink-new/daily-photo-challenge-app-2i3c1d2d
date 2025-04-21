@@ -1,11 +1,7 @@
 
 import React, { useState } from 'react';
-import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
-import { View, Text, YStack, XStack, Card, Image } from 'tamagui';
-import { Link } from 'expo-router';
-import { Camera, Heart, MessageCircle } from 'lucide-react-native';
+import { ScrollView, View, Text, Image, TouchableOpacity, RefreshControl, StyleSheet, Dimensions } from 'react-native';
 
-// Mock data for challenges
 const CHALLENGES = [
   {
     id: '1',
@@ -33,7 +29,6 @@ const CHALLENGES = [
   },
 ];
 
-// Mock data for feed
 const FEED_ITEMS = [
   {
     id: '1',
@@ -76,6 +71,8 @@ const FEED_ITEMS = [
   },
 ];
 
+const { width } = Dimensions.get('window');
+
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
 
@@ -83,184 +80,228 @@ export default function Home() {
     setRefreshing(true);
     setTimeout(() => {
       setRefreshing(false);
-    }, 2000);
+    }, 1000);
   }, []);
 
   return (
-    <View flex={1} backgroundColor="#f8f9fa">
+    <View style={{ flex: 1, backgroundColor: '#f8f9fa' }}>
       {/* Header */}
-      <View
-        backgroundColor="#6c5ce7"
-        paddingTop="$8"
-        paddingBottom="$4"
-        paddingHorizontal="$4"
-      >
-        <Text
-          fontWeight="bold"
-          fontSize={24}
-          color="white"
-          textAlign="center"
-        >
-          SnapChallenge
-        </Text>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>SnapChallenge</Text>
       </View>
 
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
+        contentContainerStyle={{ paddingBottom: 100 }}
       >
         {/* Today's Challenges */}
-        <YStack padding="$4" space="$3">
-          <Text fontWeight="600" fontSize={18} color="#333">
-            Today's Challenges
-          </Text>
-          
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Today's Challenges</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <XStack space="$3" paddingVertical="$2">
-              {CHALLENGES.map((challenge) => (
-                <Link
-                  key={challenge.id}
-                  href={`/challenge/${challenge.id}`}
-                  asChild
-                >
-                  <TouchableOpacity>
-                    <Card
-                      width={250}
-                      height={180}
-                      overflow="hidden"
-                      borderRadius="$4"
-                      backgroundColor="white"
-                      elevate
-                    >
-                      <Image
-                        source={{ uri: challenge.image }}
-                        width="100%"
-                        height={100}
-                        resizeMode="cover"
-                      />
-                      <YStack padding="$3" space="$1">
-                        <Text fontWeight="600" fontSize={16} color="#333">
-                          {challenge.title}
-                        </Text>
-                        <Text fontSize={12} color="#666" numberOfLines={1}>
-                          {challenge.description}
-                        </Text>
-                        <XStack justifyContent="space-between" marginTop="$1">
-                          <Text fontWeight="500" fontSize={12} color="#6c5ce7">
-                            {challenge.timeRemaining} left
-                          </Text>
-                          <Text fontWeight="500" fontSize={12} color="#666">
-                            {challenge.participants} participants
-                          </Text>
-                        </XStack>
-                      </YStack>
-                    </Card>
-                  </TouchableOpacity>
-                </Link>
-              ))}
-            </XStack>
+            {CHALLENGES.map((challenge) => (
+              <View key={challenge.id} style={styles.challengeCard}>
+                <Image source={{ uri: challenge.image }} style={styles.challengeImage} />
+                <View style={{ padding: 12 }}>
+                  <Text style={styles.challengeTitle}>{challenge.title}</Text>
+                  <Text style={styles.challengeDesc}>{challenge.description}</Text>
+                  <View style={styles.challengeMeta}>
+                    <Text style={styles.challengeTime}>{challenge.timeRemaining} left</Text>
+                    <Text style={styles.challengeParticipants}>{challenge.participants} joined</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
           </ScrollView>
-        </YStack>
+        </View>
 
         {/* Feed */}
-        <YStack padding="$4" space="$4">
-          <Text fontWeight="600" fontSize={18} color="#333">
-            Trending Photos
-          </Text>
-          
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Trending Photos</Text>
           {FEED_ITEMS.map((item) => (
-            <Card
-              key={item.id}
-              backgroundColor="white"
-              borderRadius="$4"
-              overflow="hidden"
-              marginBottom="$3"
-              elevate
-            >
-              {/* User info */}
-              <XStack padding="$3" alignItems="center" space="$2">
-                <Image
-                  source={{ uri: item.user.avatar }}
-                  width={40}
-                  height={40}
-                  borderRadius={20}
-                />
-                <YStack>
-                  <Text fontWeight="600" fontSize={14} color="#333">
-                    {item.user.name}
-                  </Text>
-                  <Text fontSize={12} color="#6c5ce7">
-                    #{item.challenge}
-                  </Text>
-                </YStack>
-                <Text fontSize={12} color="#999" marginLeft="auto">
-                  {item.timeAgo}
-                </Text>
-              </XStack>
-              
-              {/* Image */}
-              <Image
-                source={{ uri: item.image }}
-                width="100%"
-                height={300}
-                resizeMode="cover"
-              />
-              
-              {/* Caption */}
-              <YStack padding="$3" space="$2">
-                <Text fontSize={14} color="#333">
-                  {item.caption}
-                </Text>
-                
-                {/* Actions */}
-                <XStack marginTop="$1" space="$4">
-                  <XStack alignItems="center" space="$1">
-                    <TouchableOpacity>
-                      <Heart size={20} color="#666" />
-                    </TouchableOpacity>
-                    <Text fontWeight="500" fontSize={14} color="#666">
-                      {item.likes}
-                    </Text>
-                  </XStack>
-                  <XStack alignItems="center" space="$1">
-                    <TouchableOpacity>
-                      <MessageCircle size={20} color="#666" />
-                    </TouchableOpacity>
-                    <Text fontWeight="500" fontSize={14} color="#666">
-                      {item.comments}
-                    </Text>
-                  </XStack>
-                </XStack>
-              </YStack>
-            </Card>
+            <View key={item.id} style={styles.feedCard}>
+              <View style={styles.feedUserRow}>
+                <Image source={{ uri: item.user.avatar }} style={styles.avatar} />
+                <View>
+                  <Text style={styles.feedUserName}>{item.user.name}</Text>
+                  <Text style={styles.feedChallenge}>#{item.challenge}</Text>
+                </View>
+                <Text style={styles.feedTime}>{item.timeAgo}</Text>
+              </View>
+              <Image source={{ uri: item.image }} style={styles.feedImage} />
+              <Text style={styles.feedCaption}>{item.caption}</Text>
+              <View style={styles.feedActions}>
+                <Text style={styles.feedAction}>❤️ {item.likes}</Text>
+                <Text style={styles.feedAction}>💬 {item.comments}</Text>
+              </View>
+            </View>
           ))}
-        </YStack>
+        </View>
       </ScrollView>
 
       {/* Floating Action Button */}
-      <Link href="/camera" asChild>
-        <TouchableOpacity>
-          <View
-            position="absolute"
-            bottom={30}
-            right={30}
-            width={60}
-            height={60}
-            borderRadius={30}
-            backgroundColor="#6c5ce7"
-            justifyContent="center"
-            alignItems="center"
-            shadowColor="#000"
-            shadowOffset={{ width: 0, height: 2 }}
-            shadowOpacity={0.25}
-            shadowRadius={3.84}
-            elevation={5}
-          >
-            <Camera size={24} color="white" />
-          </View>
-        </TouchableOpacity>
-      </Link>
+      <TouchableOpacity style={styles.fab}>
+        <Text style={styles.fabIcon}>📷</Text>
+      </TouchableOpacity>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  header: {
+    backgroundColor: '#6c5ce7',
+    paddingTop: 48,
+    paddingBottom: 24,
+    alignItems: 'center',
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
+    marginBottom: 8,
+    shadowColor: '#6c5ce7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 28,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  section: {
+    marginTop: 8,
+    marginBottom: 16,
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: 12,
+  },
+  challengeCard: {
+    backgroundColor: 'white',
+    borderRadius: 18,
+    marginRight: 16,
+    width: width * 0.7,
+    shadowColor: '#6c5ce7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  challengeImage: {
+    width: '100%',
+    height: 110,
+    resizeMode: 'cover',
+  },
+  challengeTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#6c5ce7',
+    marginBottom: 2,
+  },
+  challengeDesc: {
+    fontSize: 13,
+    color: '#555',
+    marginBottom: 6,
+  },
+  challengeMeta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  challengeTime: {
+    fontSize: 12,
+    color: '#6c5ce7',
+    fontWeight: '600',
+  },
+  challengeParticipants: {
+    fontSize: 12,
+    color: '#888',
+    fontWeight: '500',
+  },
+  feedCard: {
+    backgroundColor: 'white',
+    borderRadius: 18,
+    marginBottom: 18,
+    padding: 14,
+    shadowColor: '#6c5ce7',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  feedUserRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  avatar: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    marginRight: 10,
+  },
+  feedUserName: {
+    fontWeight: '700',
+    fontSize: 14,
+    color: '#333',
+  },
+  feedChallenge: {
+    fontSize: 12,
+    color: '#6c5ce7',
+    fontWeight: '500',
+  },
+  feedTime: {
+    marginLeft: 'auto',
+    fontSize: 12,
+    color: '#aaa',
+  },
+  feedImage: {
+    width: '100%',
+    height: 210,
+    borderRadius: 12,
+    marginBottom: 8,
+    marginTop: 2,
+    resizeMode: 'cover',
+  },
+  feedCaption: {
+    fontSize: 14,
+    color: '#444',
+    marginBottom: 6,
+    marginTop: 2,
+  },
+  feedActions: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    gap: 18,
+  },
+  feedAction: {
+    fontSize: 15,
+    color: '#6c5ce7',
+    fontWeight: '600',
+    marginRight: 18,
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 32,
+    right: 28,
+    backgroundColor: '#6c5ce7',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#6c5ce7',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  fabIcon: {
+    fontSize: 28,
+    color: 'white',
+  },
+});
