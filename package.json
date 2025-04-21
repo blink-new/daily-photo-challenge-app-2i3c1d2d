@@ -1,0 +1,45 @@
+{
+  "name": "expo-react-native",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start --port 3000",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@expo/webpack-config": "^19.0.1",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@supabase/supabase-js": "^2.49.4",
+    "@tamagui/config": "^1.126.1",
+    "@tamagui/core": "^1.126.1",
+    "@tamagui/font-inter": "^1.126.1",
+    "expo": "~52.0.46",
+    "expo-constants": "^17.0.8",
+    "expo-linking": "^7.0.5",
+    "expo-router": "^4.0.20",
+    "expo-status-bar": "^2.0.1",
+    "nativewind": "^4.1.23",
+    "react": "18.3.1",
+    "react-dom": "^18.2.0",
+    "react-native": "0.76.9",
+    "react-native-gesture-handler": "^2.25.0",
+    "react-native-reanimated": "^3.17.4",
+    "react-native-safe-area-context": "^5.4.0",
+    "react-native-screens": "^4.10.0",
+    "react-native-url-polyfill": "^2.0.0",
+    "react-native-web": "^0.19.13",
+    "tamagui": "^1.126.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@types/react": "~18.3.12",
+    "autoprefixer": "^10.4.21",
+    "babel-plugin-transform-inline-environment-variables": "^0.4.4",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.3.3"
+  },
+  "private": true
+}
