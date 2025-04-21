@@ -35,7 +35,8 @@
     "expo-image-picker": "latest",
     "expo-camera": "latest",
     "lucide-react-native": "latest",
-    "date-fns": "latest"
+    "date-fns": "latest",
+    "expo-linear-gradient": "latest"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
