@@ -1,370 +1,266 @@
 
-import { useState, useRef, useEffect } from 'react';
-import { FlatList, Dimensions, Animated, RefreshControl } from 'react-native';
-import { router } from 'expo-router';
-import { 
-  YStack, 
-  XStack, 
-  Text, 
-  View, 
-  Button, 
-  Card, 
-  Avatar, 
-  Image,
-  ScrollView,
-  H1,
-  H2,
-  Separator
-} from 'tamagui';
-import { LinearGradient } from 'expo-linear-gradient';
-import { Camera, Heart, MessageCircle, Plus, Award, Clock, Users } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, YStack, XStack, Card, Image, Button } from 'tamagui';
+import { Link } from 'expo-router';
+import { Camera, Heart, MessageCircle, Plus } from 'lucide-react-native';
 
-// Mock data
+// Mock data for challenges
 const CHALLENGES = [
   {
     id: '1',
-    title: 'Morning Coffee',
-    description: 'Share your morning coffee setup!',
-    timeRemaining: '5h 23m',
+    title: 'Morning Routine',
+    description: 'Share your morning routine with the community',
+    image: 'https://images.unsplash.com/photo-1600618528240-fb9fc964b853?q=80&w=2070',
+    timeRemaining: '8 hours',
     participants: 128,
-    coverImage: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?q=80&w=2070&auto=format&fit=crop'
   },
   {
     id: '2',
-    title: 'Urban Architecture',
-    description: 'Capture interesting buildings around you',
-    timeRemaining: '8h 45m',
+    title: 'Urban Nature',
+    description: 'Find nature in unexpected urban places',
+    image: 'https://images.unsplash.com/photo-1518005068251-37900150dfca?q=80&w=2071',
+    timeRemaining: '12 hours',
     participants: 87,
-    coverImage: 'https://images.unsplash.com/photo-1486325212027-8081e485255e?q=80&w=2070&auto=format&fit=crop'
   },
   {
     id: '3',
-    title: 'Pet Portraits',
-    description: 'Show off your furry friends!',
-    timeRemaining: '11h 10m',
-    participants: 215,
-    coverImage: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=2069&auto=format&fit=crop'
+    title: 'Colorful Food',
+    description: 'Show us your most colorful meal of the day',
+    image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?q=80&w=2070',
+    timeRemaining: '5 hours',
+    participants: 156,
   },
 ];
 
+// Mock data for feed
 const FEED_ITEMS = [
   {
     id: '1',
     user: {
       name: 'Jessica Chen',
-      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop'
+      avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974',
     },
-    challenge: 'Sunset Vibes',
-    image: 'https://images.unsplash.com/photo-1472120435266-53107fd0c44a?q=80&w=2070&auto=format&fit=crop',
-    likes: 124,
-    comments: 18,
-    timeAgo: '32m'
+    challenge: 'Morning Routine',
+    image: 'https://images.unsplash.com/photo-1484627147104-f5197bcd6651?q=80&w=2070',
+    caption: 'Starting my day with meditation and a good book',
+    likes: 42,
+    comments: 7,
+    timeAgo: '2h',
   },
   {
     id: '2',
     user: {
       name: 'Marcus Johnson',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1974&auto=format&fit=crop'
+      avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974',
     },
-    challenge: 'Urban Jungle',
-    image: 'https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2144&auto=format&fit=crop',
-    likes: 89,
-    comments: 7,
-    timeAgo: '1h'
+    challenge: 'Urban Nature',
+    image: 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1983',
+    caption: 'Found this little garden between skyscrapers',
+    likes: 78,
+    comments: 12,
+    timeAgo: '4h',
   },
   {
     id: '3',
     user: {
       name: 'Sophia Williams',
-      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop'
+      avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070',
     },
-    challenge: 'Morning Coffee',
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?q=80&w=1974&auto=format&fit=crop',
-    likes: 215,
-    comments: 24,
-    timeAgo: '2h'
+    challenge: 'Colorful Food',
+    image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=2080',
+    caption: 'Rainbow salad for lunch today! #healthyeating',
+    likes: 103,
+    comments: 15,
+    timeAgo: '6h',
   },
 ];
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width * 0.8;
-const SPACING = width * 0.05;
-
 export default function Home() {
   const [refreshing, setRefreshing] = useState(false);
-  const scrollX = useRef(new Animated.Value(0)).current;
 
-  const onRefresh = () => {
+  const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-    // Simulate a refresh
     setTimeout(() => {
       setRefreshing(false);
-    }, 1500);
-  };
+    }, 2000);
+  }, []);
 
   return (
     <View flex={1} backgroundColor="#f8f9fa">
       {/* Header */}
-      <View 
-        paddingTop="$10" 
-        paddingHorizontal="$4" 
+      <View
         backgroundColor="#6c5ce7"
-        borderBottomLeftRadius="$6"
-        borderBottomRightRadius="$6"
+        paddingTop="$8"
+        paddingBottom="$4"
+        paddingHorizontal="$4"
       >
-        <XStack justifyContent="space-between" alignItems="center" paddingBottom="$4">
-          <H1 color="white" fontFamily="Poppins-Bold">
-            Daily Lens
-          </H1>
-          <Button
-            size="$3"
-            circular
-            backgroundColor="rgba(255,255,255,0.2)"
-            pressStyle={{ backgroundColor: 'rgba(255,255,255,0.3)' }}
-            onPress={() => router.push('/camera')}
-          >
-            <Camera size={20} color="white" />
-          </Button>
-        </XStack>
+        <Text
+          fontFamily="Poppins-Bold"
+          fontSize={24}
+          color="white"
+          textAlign="center"
+        >
+          SnapChallenge
+        </Text>
       </View>
 
       <ScrollView
-        flex={1}
-        contentContainerStyle={{ paddingBottom: 100 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Active Challenges */}
-        <YStack space="$2" padding="$4">
-          <XStack justifyContent="space-between" alignItems="center">
-            <H2 fontFamily="Poppins-SemiBold" color="#333">Today's Challenges</H2>
-            <Text color="#6c5ce7" fontFamily="Poppins-Medium">View All</Text>
-          </XStack>
+        {/* Today's Challenges */}
+        <YStack padding="$4" space="$3">
+          <Text fontFamily="Poppins-SemiBold" fontSize={18} color="#333">
+            Today's Challenges
+          </Text>
           
-          <View height={220}>
-            <Animated.FlatList
-              data={CHALLENGES}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingLeft: SPACING, paddingRight: SPACING * 2 }}
-              snapToInterval={CARD_WIDTH + SPACING}
-              decelerationRate="fast"
-              onScroll={Animated.event(
-                [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-                { useNativeDriver: true }
-              )}
-              renderItem={({ item, index }) => {
-                const inputRange = [
-                  (index - 1) * (CARD_WIDTH + SPACING),
-                  index * (CARD_WIDTH + SPACING),
-                  (index + 1) * (CARD_WIDTH + SPACING),
-                ];
-                
-                const scale = scrollX.interpolate({
-                  inputRange,
-                  outputRange: [0.9, 1, 0.9],
-                  extrapolate: 'clamp',
-                });
-                
-                return (
-                  <Animated.View
-                    style={{
-                      width: CARD_WIDTH,
-                      marginRight: SPACING,
-                      transform: [{ scale }],
-                    }}
-                  >
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <XStack space="$3" paddingVertical="$2">
+              {CHALLENGES.map((challenge) => (
+                <Link
+                  key={challenge.id}
+                  href={`/challenge/${challenge.id}`}
+                  asChild
+                >
+                  <TouchableOpacity>
                     <Card
-                      elevate
-                      bordered
-                      borderWidth={0}
-                      height={200}
-                      scale={1}
-                      animation="bouncy"
-                      pressStyle={{ scale: 0.98 }}
-                      onPress={() => router.push(`/challenge/${item.id}`)}
+                      width={250}
+                      height={180}
                       overflow="hidden"
+                      borderRadius="$4"
+                      backgroundColor="white"
+                      elevate
                     >
                       <Image
-                        source={{ uri: item.coverImage }}
-                        alt={item.title}
-                        style={{ 
-                          position: 'absolute', 
-                          width: '100%', 
-                          height: '100%' 
-                        }}
+                        source={{ uri: challenge.image }}
+                        width="100%"
+                        height={100}
                         resizeMode="cover"
                       />
-                      <LinearGradient
-                        colors={['rgba(0,0,0,0.1)', 'rgba(0,0,0,0.7)']}
-                        style={{
-                          position: 'absolute',
-                          width: '100%',
-                          height: '100%',
-                        }}
-                      />
-                      <YStack flex={1} justifyContent="space-between" padding="$4">
-                        <XStack space="$2" alignItems="center">
-                          <View 
-                            backgroundColor="rgba(255,255,255,0.9)" 
-                            paddingHorizontal="$2" 
-                            paddingVertical="$1"
-                            borderRadius="$4"
-                          >
-                            <XStack space="$1" alignItems="center">
-                              <Clock size={14} color="#6c5ce7" />
-                              <Text fontSize="$2" fontFamily="Poppins-Medium" color="#333">
-                                {item.timeRemaining}
-                              </Text>
-                            </XStack>
-                          </View>
-                          <View 
-                            backgroundColor="rgba(255,255,255,0.9)" 
-                            paddingHorizontal="$2" 
-                            paddingVertical="$1"
-                            borderRadius="$4"
-                          >
-                            <XStack space="$1" alignItems="center">
-                              <Users size={14} color="#6c5ce7" />
-                              <Text fontSize="$2" fontFamily="Poppins-Medium" color="#333">
-                                {item.participants}
-                              </Text>
-                            </XStack>
-                          </View>
+                      <YStack padding="$3" space="$1">
+                        <Text fontFamily="Poppins-SemiBold" fontSize={16} color="#333">
+                          {challenge.title}
+                        </Text>
+                        <Text fontFamily="Poppins-Regular" fontSize={12} color="#666" numberOfLines={1}>
+                          {challenge.description}
+                        </Text>
+                        <XStack justifyContent="space-between" marginTop="$1">
+                          <Text fontFamily="Poppins-Medium" fontSize={12} color="#6c5ce7">
+                            {challenge.timeRemaining} left
+                          </Text>
+                          <Text fontFamily="Poppins-Medium" fontSize={12} color="#666">
+                            {challenge.participants} participants
+                          </Text>
                         </XStack>
-                        <YStack>
-                          <Text 
-                            fontSize="$6" 
-                            fontFamily="Poppins-Bold" 
-                            color="white"
-                            shadowColor="rgba(0,0,0,0.5)"
-                            shadowOffset={{ width: 0, height: 1 }}
-                            shadowRadius={2}
-                          >
-                            {item.title}
-                          </Text>
-                          <Text 
-                            fontSize="$3" 
-                            fontFamily="Poppins-Regular" 
-                            color="rgba(255,255,255,0.9)"
-                            shadowColor="rgba(0,0,0,0.5)"
-                            shadowOffset={{ width: 0, height: 1 }}
-                            shadowRadius={2}
-                          >
-                            {item.description}
-                          </Text>
-                        </YStack>
                       </YStack>
                     </Card>
-                  </Animated.View>
-                );
-              }}
-              keyExtractor={item => item.id}
-            />
-          </View>
+                  </TouchableOpacity>
+                </Link>
+              ))}
+            </XStack>
+          </ScrollView>
         </YStack>
 
-        {/* Trending Photos */}
-        <YStack space="$4" paddingHorizontal="$4" marginTop="$2">
-          <XStack justifyContent="space-between" alignItems="center">
-            <H2 fontFamily="Poppins-SemiBold" color="#333">Trending Photos</H2>
-            <Text color="#6c5ce7" fontFamily="Poppins-Medium">View All</Text>
-          </XStack>
-
-          <YStack space="$4">
-            {FEED_ITEMS.map(item => (
-              <Card
-                key={item.id}
-                elevate
-                bordered
-                borderWidth={0}
-                overflow="hidden"
-                scale={1}
-                animation="bouncy"
-                pressStyle={{ scale: 0.98 }}
-              >
-                <Card.Header paddingHorizontal="$4" paddingVertical="$3">
-                  <XStack space="$3" alignItems="center">
-                    <Avatar circular size="$4">
-                      <Avatar.Image src={item.user.avatar} />
-                      <Avatar.Fallback backgroundColor="#6c5ce7" />
-                    </Avatar>
-                    <YStack>
-                      <Text fontFamily="Poppins-SemiBold" fontSize="$4" color="#333">
-                        {item.user.name}
-                      </Text>
-                      <XStack space="$1" alignItems="center">
-                        <Award size={14} color="#6c5ce7" />
-                        <Text fontFamily="Poppins-Medium" fontSize="$2" color="#666">
-                          {item.challenge} • {item.timeAgo}
-                        </Text>
-                      </XStack>
-                    </YStack>
-                  </XStack>
-                </Card.Header>
-
+        {/* Feed */}
+        <YStack padding="$4" space="$4">
+          <Text fontFamily="Poppins-SemiBold" fontSize={18} color="#333">
+            Trending Photos
+          </Text>
+          
+          {FEED_ITEMS.map((item) => (
+            <Card
+              key={item.id}
+              backgroundColor="white"
+              borderRadius="$4"
+              overflow="hidden"
+              marginBottom="$3"
+              elevate
+            >
+              {/* User info */}
+              <XStack padding="$3" alignItems="center" space="$2">
                 <Image
-                  source={{ uri: item.image }}
-                  alt={`Photo by ${item.user.name}`}
-                  style={{ width: '100%', height: 300 }}
-                  resizeMode="cover"
+                  source={{ uri: item.user.avatar }}
+                  width={40}
+                  height={40}
+                  borderRadius={20}
                 />
-
-                <Card.Footer paddingHorizontal="$4" paddingVertical="$3">
-                  <XStack justifyContent="space-between">
-                    <XStack space="$4">
-                      <XStack space="$1" alignItems="center">
-                        <Button
-                          size="$3"
-                          circular
-                          backgroundColor="transparent"
-                          pressStyle={{ backgroundColor: 'rgba(108, 92, 231, 0.1)' }}
-                        >
-                          <Heart size={22} color="#6c5ce7" />
-                        </Button>
-                        <Text fontFamily="Poppins-Medium" color="#333">{item.likes}</Text>
-                      </XStack>
-                      <XStack space="$1" alignItems="center">
-                        <Button
-                          size="$3"
-                          circular
-                          backgroundColor="transparent"
-                          pressStyle={{ backgroundColor: 'rgba(108, 92, 231, 0.1)' }}
-                        >
-                          <MessageCircle size={22} color="#6c5ce7" />
-                        </Button>
-                        <Text fontFamily="Poppins-Medium" color="#333">{item.comments}</Text>
-                      </XStack>
-                    </XStack>
+                <YStack>
+                  <Text fontFamily="Poppins-SemiBold" fontSize={14} color="#333">
+                    {item.user.name}
+                  </Text>
+                  <Text fontFamily="Poppins-Regular" fontSize={12} color="#6c5ce7">
+                    #{item.challenge}
+                  </Text>
+                </YStack>
+                <Text fontFamily="Poppins-Regular" fontSize={12} color="#999" marginLeft="auto">
+                  {item.timeAgo}
+                </Text>
+              </XStack>
+              
+              {/* Image */}
+              <Image
+                source={{ uri: item.image }}
+                width="100%"
+                height={300}
+                resizeMode="cover"
+              />
+              
+              {/* Caption */}
+              <YStack padding="$3" space="$2">
+                <Text fontFamily="Poppins-Regular" fontSize={14} color="#333">
+                  {item.caption}
+                </Text>
+                
+                {/* Actions */}
+                <XStack marginTop="$1" space="$4">
+                  <XStack alignItems="center" space="$1">
+                    <TouchableOpacity>
+                      <Heart size={20} color="#666" />
+                    </TouchableOpacity>
+                    <Text fontFamily="Poppins-Medium" fontSize={14} color="#666">
+                      {item.likes}
+                    </Text>
                   </XStack>
-                </Card.Footer>
-              </Card>
-            ))}
-          </YStack>
+                  <XStack alignItems="center" space="$1">
+                    <TouchableOpacity>
+                      <MessageCircle size={20} color="#666" />
+                    </TouchableOpacity>
+                    <Text fontFamily="Poppins-Medium" fontSize={14} color="#666">
+                      {item.comments}
+                    </Text>
+                  </XStack>
+                </XStack>
+              </YStack>
+            </Card>
+          ))}
         </YStack>
       </ScrollView>
 
       {/* Floating Action Button */}
-      <View
-        position="absolute"
-        bottom={30}
-        alignSelf="center"
-      >
-        <Button
-          size="$5"
-          circular
-          backgroundColor="#6c5ce7"
-          pressStyle={{ backgroundColor: '#5a4ad1' }}
-          shadowColor="rgba(108, 92, 231, 0.4)"
-          shadowOffset={{ width: 0, height: 4 }}
-          shadowOpacity={0.3}
-          shadowRadius={8}
-          onPress={() => router.push('/camera')}
-        >
-          <Plus size={24} color="white" />
-        </Button>
-      </View>
+      <Link href="/camera" asChild>
+        <TouchableOpacity>
+          <View
+            position="absolute"
+            bottom={30}
+            right={30}
+            width={60}
+            height={60}
+            borderRadius={30}
+            backgroundColor="#6c5ce7"
+            justifyContent="center"
+            alignItems="center"
+            shadowColor="#000"
+            shadowOffset={{ width: 0, height: 2 }}
+            shadowOpacity={0.25}
+            shadowRadius={3.84}
+            elevation={5}
+          >
+            <Camera size={24} color="white" />
+          </View>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 }

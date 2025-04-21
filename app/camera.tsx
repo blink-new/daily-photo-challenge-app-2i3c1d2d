@@ -1,25 +1,15 @@
 
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { 
-  YStack, 
-  XStack, 
-  Text, 
-  View, 
-  Button, 
-  Card, 
-  TextArea,
-  H2
-} from 'tamagui';
-import { Image } from 'expo-image';
-import { ArrowLeft, Camera, Upload, X } from 'lucide-react-native';
+import React, { useState } from 'react';
+import { TouchableOpacity, Platform } from 'react-native';
+import { View, Text, YStack, XStack, Card, Image, Button, Input, TextArea } from 'tamagui';
+import { useLocalSearchParams, router } from 'expo-router';
+import { ArrowLeft, Camera, Image as ImageIcon, Upload } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
-import { LinearGradient } from 'expo-linear-gradient';
 
 export default function CameraScreen() {
+  const { challengeId } = useLocalSearchParams();
   const [image, setImage] = useState<string | null>(null);
   const [caption, setCaption] = useState('');
-  const [uploading, setUploading] = useState(false);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -54,137 +44,128 @@ export default function CameraScreen() {
   };
 
   const handleSubmit = () => {
-    if (!image) return;
-    
-    setUploading(true);
-    
-    // Simulate upload
-    setTimeout(() => {
-      setUploading(false);
-      router.back();
-    }, 2000);
+    // In a real app, we would upload the image and caption to a server
+    // For now, we'll just navigate back to the challenge screen
+    alert('Photo submitted successfully!');
+    router.back();
   };
 
   return (
     <View flex={1} backgroundColor="#f8f9fa">
       {/* Header */}
-      <View 
-        paddingTop="$10" 
-        paddingHorizontal="$4" 
-        paddingBottom="$4"
+      <View
         backgroundColor="#6c5ce7"
+        paddingTop="$8"
+        paddingBottom="$4"
+        paddingHorizontal="$4"
       >
-        <XStack justifyContent="space-between" alignItems="center">
-          <Button
-            size="$3"
-            circular
-            backgroundColor="rgba(255,255,255,0.2)"
-            pressStyle={{ backgroundColor: 'rgba(255,255,255,0.3)' }}
-            onPress={() => router.back()}
+        <XStack alignItems="center">
+          <TouchableOpacity onPress={() => router.back()}>
+            <ArrowLeft size={24} color="white" />
+          </TouchableOpacity>
+          <Text
+            fontFamily="Poppins-Bold"
+            fontSize={20}
+            color="white"
+            textAlign="center"
+            flex={1}
           >
-            <ArrowLeft size={20} color="white" />
-          </Button>
-          <H2 color="white" fontFamily="Poppins-SemiBold">
             Submit Photo
-          </H2>
-          <View width={40} />
+          </Text>
+          <View width={24} /> {/* For balance */}
         </XStack>
       </View>
 
       <YStack flex={1} padding="$4" space="$4">
+        {/* Image Preview */}
         {image ? (
           <Card
-            elevate
-            bordered
-            borderWidth={0}
+            backgroundColor="white"
+            borderRadius="$4"
             overflow="hidden"
-            height={400}
-            position="relative"
+            height={300}
+            elevate
           >
             <Image
               source={{ uri: image }}
-              style={{ width: '100%', height: '100%' }}
-              contentFit="cover"
+              width="100%"
+              height="100%"
+              resizeMode="cover"
             />
-            <Button
-              size="$3"
-              circular
-              position="absolute"
-              top={10}
-              right={10}
-              backgroundColor="rgba(0,0,0,0.5)"
-              pressStyle={{ backgroundColor: 'rgba(0,0,0,0.7)' }}
-              onPress={() => setImage(null)}
-            >
-              <X size={20} color="white" />
-            </Button>
           </Card>
         ) : (
           <Card
-            elevate
-            bordered
-            height={400}
+            backgroundColor="white"
+            borderRadius="$4"
+            height={300}
             alignItems="center"
             justifyContent="center"
-            backgroundColor="#f0f0f0"
+            elevate
           >
-            <YStack space="$6" alignItems="center" padding="$4">
-              <Camera size={60} color="#6c5ce7" opacity={0.7} />
-              <Text fontFamily="Poppins-Medium" fontSize="$5" textAlign="center" color="#666">
-                Take a photo or upload from your gallery
+            <YStack alignItems="center" space="$2">
+              <ImageIcon size={48} color="#ccc" />
+              <Text fontFamily="Poppins-Medium" fontSize={16} color="#666">
+                No image selected
               </Text>
-              <XStack space="$4">
-                <Button
-                  size="$4"
-                  backgroundColor="#6c5ce7"
-                  color="white"
-                  fontFamily="Poppins-SemiBold"
-                  pressStyle={{ backgroundColor: '#5a4ad1' }}
-                  onPress={takePhoto}
-                >
-                  <Camera size={18} color="white" />
-                  <Text color="white" fontFamily="Poppins-SemiBold">Camera</Text>
-                </Button>
-                <Button
-                  size="$4"
-                  backgroundColor="#6c5ce7"
-                  color="white"
-                  fontFamily="Poppins-SemiBold"
-                  pressStyle={{ backgroundColor: '#5a4ad1' }}
-                  onPress={pickImage}
-                >
-                  <Upload size={18} color="white" />
-                  <Text color="white" fontFamily="Poppins-SemiBold">Gallery</Text>
-                </Button>
-              </XStack>
             </YStack>
           </Card>
         )}
 
-        {image && (
-          <YStack space="$4">
-            <TextArea
-              placeholder="Write a caption for your photo..."
-              value={caption}
-              onChangeText={setCaption}
-              minHeight={100}
-              autoCapitalize="none"
-              fontFamily="Poppins-Regular"
-            />
-            <Button
-              size="$4"
-              backgroundColor="#6c5ce7"
-              color="white"
-              fontFamily="Poppins-SemiBold"
-              pressStyle={{ backgroundColor: '#5a4ad1' }}
-              onPress={handleSubmit}
-              disabled={uploading}
-              opacity={uploading ? 0.7 : 1}
-            >
-              {uploading ? 'Uploading...' : 'Submit Photo'}
-            </Button>
-          </YStack>
-        )}
+        {/* Caption Input */}
+        <Card backgroundColor="white" borderRadius="$4" padding="$4" elevate>
+          <TextArea
+            placeholder="Write a caption for your photo..."
+            value={caption}
+            onChangeText={setCaption}
+            fontFamily="Poppins-Regular"
+            fontSize={16}
+            minHeight={100}
+            autoCapitalize="none"
+          />
+        </Card>
+
+        {/* Camera/Gallery Buttons */}
+        <XStack space="$4">
+          <Button
+            flex={1}
+            backgroundColor="#6c5ce7"
+            color="white"
+            fontFamily="Poppins-SemiBold"
+            fontSize={16}
+            height={50}
+            onPress={takePhoto}
+            icon={<Camera size={18} color="white" />}
+          >
+            Take Photo
+          </Button>
+          <Button
+            flex={1}
+            backgroundColor="#6c5ce7"
+            color="white"
+            fontFamily="Poppins-SemiBold"
+            fontSize={16}
+            height={50}
+            onPress={pickImage}
+            icon={<ImageIcon size={18} color="white" />}
+          >
+            Gallery
+          </Button>
+        </XStack>
+
+        {/* Submit Button */}
+        <Button
+          backgroundColor={image ? "#6c5ce7" : "#ccc"}
+          color="white"
+          fontFamily="Poppins-SemiBold"
+          fontSize={16}
+          height={50}
+          marginTop="auto"
+          disabled={!image}
+          onPress={handleSubmit}
+          icon={<Upload size={18} color="white" />}
+        >
+          Submit Photo
+        </Button>
       </YStack>
     </View>
   );
